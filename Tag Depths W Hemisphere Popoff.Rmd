@@ -47,7 +47,7 @@ Depths_234814$datetime = dmy_hms(paste(Depths_234814$Day,Depths_234814$Time))
 ###3) Look up time zone based on popoff lat/long for tag of interest and add to data frame with popoff lat/long.
 ###4) Join the depth data frame and popoff location and time zone data frame.
 ```{r}
-Popoff_loc <-read.csv(file="C:/R_git_stuff/Mobula-tag-depths/Mobula_locations_July_29_2024.csv", header=TRUE, sep=",")
+Popoff_loc <-read.csv(file="C:/R_git_stuff/Mobula-tag-depths/Mobula_locations.csv", header=TRUE, sep=",")
 
 Popoff_loc_234814 <- Popoff_loc %>% 
   filter(Ptt == 234814) %>%
