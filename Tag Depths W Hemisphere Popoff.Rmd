@@ -9,7 +9,7 @@ output:
 
 #Purpose - Create visualizations for Mobula ray depth data for tags that popoff in the eastern hemisphere.
 
-##To update code for a new tag, use find and replace all for 1) the tag Ptt number (for example replace 234814 with 234814) and 2) time zone (for example replace Etc/GMT+10 with Etc/GMT+11) in 1) for time conversion from UTC to popoff time zone (line 67), 2) line plot function, and 3) boxplot function. 
+##To update code for a new tag, use find and replace all for 1) the tag Ptt number (for example replace 234821 with 234821) and 2) time zone (for example replace Etc/GMT+10 with Etc/GMT+11) in 1) for time conversion from UTC to popoff time zone (line 67), 2) line plot function, and 3) boxplot function. 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,11 +26,11 @@ library(lutz)#use to determine time zone based on lat/long
 
 ##Read in data.
 ```{r}
-Depths_234814 <-read.csv(file="C:/R_git_stuff/Mobula-tag-depths/234814-Series.csv", header=TRUE, sep=",")
+Depths_234821 <-read.csv(file="C:/R_git_stuff/Mobula-tag-depths/234821-Series.csv", header=TRUE, sep=",")
 
-#head(Depths_234814)
-#glimpse(Depths_234814)
-#dim(Depths_234814) 
+#head(Depths_234821)
+#glimpse(Depths_234821)
+#dim(Depths_234821) 
 ```
 
 #Format time and convert to tag popoff time zone.
@@ -38,7 +38,7 @@ Depths_234814 <-read.csv(file="C:/R_git_stuff/Mobula-tag-depths/234814-Series.cs
 
 ###Combine date and time fields to get datetime field in UTC.
 ```{r}
-Depths_234814$datetime = dmy_hms(paste(Depths_234814$Day,Depths_234814$Time))
+Depths_234821$datetime = dmy_hms(paste(Depths_234821$Day,Depths_234821$Time))
 ```
 
 ##Determine local time zone based on popoff location. 
@@ -49,21 +49,21 @@ Depths_234814$datetime = dmy_hms(paste(Depths_234814$Day,Depths_234814$Time))
 ```{r}
 Popoff_loc <-read.csv(file="C:/R_git_stuff/Mobula-tag-depths/Mobula_locations.csv", header=TRUE, sep=",")
 
-Popoff_loc_234814 <- Popoff_loc %>% 
-  filter(Ptt == 234814) %>%
+Popoff_loc_234821 <- Popoff_loc %>% 
+  filter(Ptt == 234821) %>%
   select(Popoff_lat, Popoff_long) %>%
-  mutate(Ptt = as.integer(234814))
+  mutate(Ptt = as.integer(234821))
 
-Popoff_loc_234814$Popoff_tz <- tz_lookup_coords(Popoff_loc_234814$Popoff_lat, Popoff_loc_234814$Popoff_long, method = "accurate")
+Popoff_loc_234821$Popoff_tz <- tz_lookup_coords(Popoff_loc_234821$Popoff_lat, Popoff_loc_234821$Popoff_long, method = "accurate")
 
-Depths_234814 <- left_join(Depths_234814,Popoff_loc_234814, by = join_by (Ptt))
+Depths_234821 <- left_join(Depths_234821,Popoff_loc_234821, by = join_by (Ptt))
 ```
 
 ##Create new column with date/time info for tag popoff location time zone. 
 ***UPDATE LINE 68 with correct tag time zone.
 ###Note UTC and GMT is the same. 
 ```{r}
-Depths_234814$Popoff_datetime = Depths_234814$datetime %>%
+Depths_234821$Popoff_datetime = Depths_234821$datetime %>%
   lubridate:::ymd_hms(tz="UTC") %>% 
     with_tz(tzone="Etc/GMT+11")
 
@@ -72,17 +72,17 @@ Depths_234814$Popoff_datetime = Depths_234814$datetime %>%
 ###Run below code to interpolate date/times for NAs created from formatting issues at midnight (due to Wildlife Computer formating of 00:00:00) to interpolate date/time based on previous or subsequent observations with observations recorded every 10 minutes or these tags. 
 ```{r}
 mins_in_interval <- 10 #This is based on 10 minute intervals and needs to be updated if interval is different.
-z <- Depths_234814$Popoff_datetime #Create a new variable z with datetime info to update.
+z <- Depths_234821$Popoff_datetime #Create a new variable z with datetime info to update.
 na_rows <- which(is.na(z))#creates variable na_rows to identify rows that were updated from NA in below code.
 z[which(is.na(z))] <- z[which(is.na(z)) + 1] - mins_in_interval*60 #interpolates NA row with date/time from previous 10 minute interval.
 z[which(is.na(z))] <- z[which(is.na(z)) - 1] + mins_in_interval*60 #interpolates NA row with date/time from following 10 minute interval.
-Depths_234814$Popoff_datetime <- z #update Popoff_datetime field with z variable.
+Depths_234821$Popoff_datetime <- z #update Popoff_datetime field with z variable.
 ```
 #####can check which NA rows were updated and the offset (conversion) from UTC.
 #####Note Etc/GMT+10 has an offset of UTC-10. I don't understand naming at all.
 
 ```{r}
-Depths_234814$Popoff_datetime[na_rows]
+Depths_234821$Popoff_datetime[na_rows]
 ```
 *****************************************************************************************************
 #Line Plots
@@ -102,31 +102,9 @@ source("Tag depth line plots.R")
 ##update the code with the correct poppoff time zone (from tz_lookup_coords) and the offset from HST time zone which is UTC - 10, for display.
 
 ```{r}
-brett_depth_plot_good_label_yaxis(Depths_234814, "Etc/GMT+11", "Tag ID 234814", x_label = "Date/time (HST - 1) hr)", ylims = c(400, 0))
+brett_depth_plot_good_label_yaxis(Depths_234821, "Etc/GMT+11", "Tag ID 234821", x_label = "Date/time (HST - 1) hr)", ylims = c(400, 0))
 
-ggsave("234814_lineplot.png")
-```
-
-##Filter out any bad data
-###Need to examine plot for any data that needs to be filtered out (e.g. when tag is floating or when data missing).
-
-###Need to use exact date times that are in the depths data file to filter out. Below code filters out using the UTC time but could do with popoff time as well.
-
-###Tags to filter: 
-#### M. mobular - filter(datetime > ymd_hms("2024-05-31 00:00:00", tz="UTC") & datetime < ymd_hms("2024-06-04 09:20:00", tz="UTC"))#Need to filter out with actual date/time in data frame and use last time before tag floating. 
-
-```{r}
-Depths_234814_filtered <-Depths_234814 %>% dplyr::filter(datetime > ymd_hms("2024-05-31 00:00:00", tz="UTC") & datetime < ymd_hms("2024-06-04 09:20:00", tz="UTC"))#Need to filter out with actual date/time in data frame and use last time before tag floating.
-
-Depths_234814_filtered = Depths_234814 %>% dplyr::filter(datetime > ymd_hms("2023-07-12 02:30:00", tz="UTC") & datetime < ymd_hms("2023-07-14 11:00:00", tz="UTC"))
-
-```
-
-### Change time zone and label for time offset before running code.
-```{r}
-brett_depth_plot_good_label_yaxis(Depths_234814_filtered, "Etc/GMT+11", "Tag ID 234814", x_label = "Date/time (HST - 1 hrs)", ylims = c(400, 0))
-
-ggsave("234814_lineplot.jpg")
+ggsave("234821_lineplot.png")
 ```
 **************************************************************************
 #BOXPLOTS
@@ -139,25 +117,8 @@ source("Tag depth boxplot.R")
 
 ##Update code with the correct poppoff time zone (from tz_lookup_coords) and time offset from HST time zone which is UTC - 10, for display.
 ```{r}
-brett_box_plot(Depths_234814, "Etc/GMT+11", "Tag ID 234814",
+brett_box_plot(Depths_234821, "Etc/GMT+11", "Tag ID 234821",
                x_label = "Hour (HST - 1 hr)", ylims = c(400, 0))
-ggsave("234814_boxplot.png")
-
-#run below code if need to filter out bad data.
-#brett_box_plot(Depths_234814_filtered, "Etc/GMT+10", "Tag ID 234814", x_label = "Hours (HST)", ylims = c(400, 0))
-#ggsave("234814_boxplot_filtered.png")
-
-```
-
-*****************************************************************************
-#Moon cycles
-
-##Determine if there is any connection between deep dives and high lunar illumination. Can look at the daily max dives from the daily data (e.g. 234814-DailyData.csv) that is reported for the entire tag deployment.  
-```{r}
-library(lunar)
-#help("lunar.illumination")
-
-#format should be yyyy-month-day
-lunar.illumination(as.Date("2024-05-15"))#Dive to 929 m corresponds to lunar illumination of 0.479804
+ggsave("234821_boxplot.png")
 
 ```
