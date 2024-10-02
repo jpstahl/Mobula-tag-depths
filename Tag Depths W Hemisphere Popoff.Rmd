@@ -107,27 +107,6 @@ brett_depth_plot_good_label_yaxis(Depths_234814, "Etc/GMT+11", "Tag ID 234814", 
 ggsave("234814_lineplot.png")
 ```
 
-##Filter out any bad data
-###Need to examine plot for any data that needs to be filtered out (e.g. when tag is floating or when data missing).
-
-###Need to use exact date times that are in the depths data file to filter out. Below code filters out using the UTC time but could do with popoff time as well.
-
-###Tags to filter: 
-#### M. mobular - filter(datetime > ymd_hms("2024-05-31 00:00:00", tz="UTC") & datetime < ymd_hms("2024-06-04 09:20:00", tz="UTC"))#Need to filter out with actual date/time in data frame and use last time before tag floating. 
-
-```{r}
-Depths_234814_filtered <-Depths_234814 %>% dplyr::filter(datetime > ymd_hms("2024-05-31 00:00:00", tz="UTC") & datetime < ymd_hms("2024-06-04 09:20:00", tz="UTC"))#Need to filter out with actual date/time in data frame and use last time before tag floating.
-
-Depths_234814_filtered = Depths_234814 %>% dplyr::filter(datetime > ymd_hms("2023-07-12 02:30:00", tz="UTC") & datetime < ymd_hms("2023-07-14 11:00:00", tz="UTC"))
-
-```
-
-### Change time zone and label for time offset before running code.
-```{r}
-brett_depth_plot_good_label_yaxis(Depths_234814_filtered, "Etc/GMT+11", "Tag ID 234814", x_label = "Date/time (HST - 1 hrs)", ylims = c(400, 0))
-
-ggsave("234814_lineplot.jpg")
-```
 **************************************************************************
 #BOXPLOTS
 ##Line in boxplot is median depth. Boxes represent the 25% and 75% percentile depth. Vertical lines are max and min depths. Dots are the "outliers", which are probably just infrequent dives. Alternatively could use a violin plot instead.
