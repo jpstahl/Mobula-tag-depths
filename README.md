@@ -2,7 +2,7 @@
 
 Purpose
 
-Code to display mobula ray tag depth data for tags that popoff in the western hemisphere. Similar code can be found in the repository Mobula-tag-depths (https://github.com/jpstahl/Mobula-tag-depths) that was developed for tags that popoff in the eastern hemisphere.
+Code to display mobula ray tag depth data for tags that popoff in the western hemisphere. Similar code can be found in the repository Mobula-tag-depths (https://github.com/jpstahl/Mobula-tag-depths-E-hemisphere) that was developed for tags that popoff in the eastern hemisphere.
 
 The code was developed for Wildlife computers survival archival tags (sPAT tags) programmed to 60 days. These tags are deployed in the Hawaii longline fishery in western hemisphere (negative longitude).
 
