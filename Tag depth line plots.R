@@ -18,9 +18,9 @@ brett_depth_plot_good_label_yaxis <- function(depth_df, Popoff_datetime,
   
   # Get the sun times of day
   sun <- getSunlightTimes(date  = dates,
-                          lat = unique(depth_df$Popoff_lat),
-                          lon = unique(depth_df$Popoff_long),
-                          tz = Popoff_datetime,
+                          lat = as.numeric(unique(Depths_234815$Popoff_lat)),
+                          lon = as.numeric(unique(Depths_234815$Popoff_long)),
+                          tz = as.character(unique(Depths_234815$Popoff_tz)),
                           keep = c("nightEnd","sunrise", "sunset", "night"))
   
   # Y limits
